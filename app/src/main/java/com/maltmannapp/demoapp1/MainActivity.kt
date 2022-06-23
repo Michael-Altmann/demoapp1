@@ -1,22 +1,16 @@
 package com.maltmannapp.demoapp1
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Im
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.RadioButton
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalTime
@@ -24,6 +18,7 @@ import java.time.LocalTime
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textView: TextView
+    private var counter = 0
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +30,18 @@ class MainActivity : AppCompatActivity() {
         registerForContextMenu(textView)
 
         val button = findViewById<Button>(R.id.button1)
-        var counter = 0
+
+        // Recover instance state even if device rotated
+        if (savedInstanceState != null) {
+            counter = savedInstanceState.getInt("counter")
+            textView.text = "$counter"
+        }
+
         button.setOnClickListener {
             counter++
             textView.text = "Clicked $counter"
         }
+
 
         // Output a debug message OLD
         // Log.d("MainActivity", "Hi!")
@@ -181,9 +183,32 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, LayoutActivity::class.java)
             startActivity(intent)
         }
+    }
 
-        
+    // Activity lifecycle on toast
+    override fun onStart() {
+        super.onStart()
+        showToast(this, "onStart")
+    }
 
+    override fun onResume() {
+        super.onResume()
+        showToast(this, "onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        showToast(this, "onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        showToast(this, "onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        showToast(this, "onDestroy")
     }
 
     // Create a menu
@@ -220,4 +245,13 @@ class MainActivity : AppCompatActivity() {
         }
         return true
     }
+
+    // Save instance state when device rotated
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("counter", counter)
+    }
+
+
+
 }
