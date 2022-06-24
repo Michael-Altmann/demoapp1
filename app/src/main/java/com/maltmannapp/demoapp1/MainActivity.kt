@@ -183,6 +183,15 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, LayoutActivity::class.java)
             startActivity(intent)
         }
+
+        // Send intent with bundle (ep4-1:21)
+        val communicateButton: Button = findViewById(R.id.comunicateActiviteButton)
+        communicateButton.setOnClickListener {
+            val intent = Intent(this, CommunicateActivity::class.java)
+            intent.putExtra(MESSAGE_KEY, textView.text.toString())
+            startActivity(intent)
+        }
+
     }
 
     // Activity lifecycle on toast
@@ -251,7 +260,5 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putInt("counter", counter)
     }
-
-
 
 }
