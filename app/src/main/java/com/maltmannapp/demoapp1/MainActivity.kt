@@ -11,12 +11,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import java.time.LocalTime
 
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var launcher1: ActivityResultLauncher<Intent>
+    lateinit var launcher2: ActivityResultLauncher<Int>
+
     private lateinit var textView: TextView
     private var counter = 0
 
@@ -192,6 +198,26 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        // Set a launcher
+        launcher1 = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                textView.text = it.data?.getStringExtra(ACTIVITY_RESULT_KEY)?: "No data"
+            } else {
+                textView.text = "Canceled"
+            }
+        }
+
+        // Set a button and launch
+        val activityButton1: Button = findViewById(R.id.buttonLauncher1)
+        activityButton1.setOnClickListener{
+            val intent = Intent(this, OneActivity::class.java)
+            intent.putExtra(ACTIVITY_INPUT_KEY, textView.text.toString())
+            launcher1.launch(intent)
+        }
+
+
+
     }
 
     // Activity lifecycle on toast
@@ -260,5 +286,7 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putInt("counter", counter)
     }
+
+
 
 }

@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.widget.TextView
 
 val MESSAGE_KEY = "message_key"
+val RESULT_OK = "result_ok"
+val ACTIVITY_RESULT_KEY = "100"
+val ACTIVITY_INPUT_KEY = "200"
 
 class CommunicateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

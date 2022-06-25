@@ -219,4 +219,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
+    <Button
+        android:id="@+id/buttonLauncher2"
+        android:layout_width="150dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="52dp"
+        android:text="Launcher2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/comunicateActiviteButton" />
+
+    <Button
+        android:id="@+id/buttonLauncher1"
+        android:layout_width="148dp"
+        android:layout_height="48dp"
+        android:text="Launcher1"
+        app:layout_constraintEnd_toStartOf="@+id/buttonLauncher2"
+        app:layout_constraintHorizontal_bias="0.973"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/comunicateActiviteButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
