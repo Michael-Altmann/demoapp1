@@ -17,6 +17,6 @@ class CommunicateActivity : AppCompatActivity() {
         val textView: TextView = findViewById(R.id.textviewCommunicate)
         textView.text = intent.getStringExtra(MESSAGE_KEY)
 
-        TODO("1:30:00")
+        TODO("1:39:00")
     }
 }

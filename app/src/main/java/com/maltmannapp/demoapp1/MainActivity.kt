@@ -1,6 +1,7 @@
 package com.maltmannapp.demoapp1
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var textView: TextView
     private var counter = 0
+
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -216,6 +220,27 @@ class MainActivity : AppCompatActivity() {
             launcher1.launch(intent)
         }
 
+        class MyResultContract: ActivityResultContract<Int, String>() {
+            override fun createIntent(context: Context, input: Int?): Intent {
+                val data = Intent(context, TwoActivity::class.java)
+                data.putExtra(TWO_ACTIVITY_INPUT_KEY, input?: 0)
+                return data
+            }
+
+            override fun parseResult(resultCode: Int, intent: Intent?): String {
+                val number = intent?.getIntExtra(TWO_ACTIVITY_RESULT_KEY, -1)
+                return "$number"
+            }
+        }
+
+        launcher2 = registerForActivityResult(MyResultContract()) {
+            textView.text = it
+        }
+
+        val activityButton2: Button = findViewById(R.id.buttonLauncher2)
+        activityButton2.setOnClickListener {
+            launcher2.launch(100)
+        }
 
 
     }
