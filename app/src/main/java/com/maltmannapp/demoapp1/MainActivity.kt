@@ -1,10 +1,14 @@
 package com.maltmannapp.demoapp1
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore.Images
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.ContextMenu
@@ -17,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import java.net.URI
 import java.time.LocalTime
 
 
@@ -24,10 +29,10 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var launcher1: ActivityResultLauncher<Intent>
     lateinit var launcher2: ActivityResultLauncher<Int>
+    lateinit var photoPicker: ActivityResultLauncher<Intent>
 
     private lateinit var textView: TextView
     private var counter = 0
-
 
 
     @SuppressLint("MissingInflatedId")
@@ -118,6 +123,7 @@ class MainActivity : AppCompatActivity() {
             enableButton1.isEnabled = true
         }
 
+        // Imageview
         val picView: ImageView = findViewById(R.id.imageView)
         val picChangeButton: Button = findViewById(R.id.button9)
         picChangeButton.setOnClickListener {
@@ -204,9 +210,10 @@ class MainActivity : AppCompatActivity() {
 
         // Set a launcher
         launcher1 = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()) {
+            ActivityResultContracts.StartActivityForResult()
+        ) {
             if (it.resultCode == RESULT_OK) {
-                textView.text = it.data?.getStringExtra(ACTIVITY_RESULT_KEY)?: "No data"
+                textView.text = it.data?.getStringExtra(ACTIVITY_RESULT_KEY) ?: "No data"
             } else {
                 textView.text = "Canceled"
             }
@@ -214,16 +221,16 @@ class MainActivity : AppCompatActivity() {
 
         // Set a button and launch
         val activityButton1: Button = findViewById(R.id.buttonLauncher1)
-        activityButton1.setOnClickListener{
+        activityButton1.setOnClickListener {
             val intent = Intent(this, OneActivity::class.java)
             intent.putExtra(ACTIVITY_INPUT_KEY, textView.text.toString())
             launcher1.launch(intent)
         }
 
-        class MyResultContract: ActivityResultContract<Int, String>() {
+        class MyResultContract : ActivityResultContract<Int, String>() {
             override fun createIntent(context: Context, input: Int?): Intent {
                 val data = Intent(context, TwoActivity::class.java)
-                data.putExtra(TWO_ACTIVITY_INPUT_KEY, input?: 0)
+                data.putExtra(TWO_ACTIVITY_INPUT_KEY, input ?: 0)
                 return data
             }
 
@@ -242,8 +249,40 @@ class MainActivity : AppCompatActivity() {
             launcher2.launch(100)
         }
 
+        // Define how to decode a pic to bitmap.
+        fun tryReadBitmap(data: Uri): Bitmap? {
+            return try {
+                val source = ImageDecoder.createSource(contentResolver, data)
+                ImageDecoder.decodeBitmap(source)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return null
+            }
+        }
 
+        // Crash fixed! Build a photo picker.
+        photoPicker = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val bitmap = tryReadBitmap(it.data?.data as Uri)
+                bitmap.let {
+                    picView.setImageBitmap(bitmap)
+                }
+            }
+        }
+
+        val buttonPhotoPicker: Button = findViewById(R.id.buttonPhotoPicker)
+        buttonPhotoPicker.setOnClickListener {
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            val picker = Intent.createChooser(intent, "Pick a photo")
+            photoPicker.launch(picker)
+        }
     }
+
+
 
     // Activity lifecycle on toast
     override fun onStart() {
@@ -311,7 +350,6 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putInt("counter", counter)
     }
-
 
 
 }
